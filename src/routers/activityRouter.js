@@ -6,11 +6,12 @@ const router = new express.Router()
 
 // some functions will need to be async
 router.post("/activities", auth, async (req, res) => {
-  console.log(req.body)
   const activity = new Activity({
     ...req.body,
     owner: req.user._id, // links activity to a user
   })
+
+  console.log(activity)
 
   try {
     await activity.save()

@@ -11,6 +11,10 @@ const activitySchema = mongoose.Schema(
       type: String,
       required: true,
     },
+    base64ImageString: {
+      type: String,
+      required: true,
+    },
     owner: {
       type: mongoose.Schema.Types.ObjectId,
       required: true,
