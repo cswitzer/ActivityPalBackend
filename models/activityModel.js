@@ -5,6 +5,8 @@ const bcrypt = require("bcryptjs")
 const validator = require("validator")
 const jwt = require("jsonwebtoken")
 
+const User = require("./userModel.js")
+
 const activitySchema = mongoose.Schema(
   {
     name: {
@@ -14,7 +16,14 @@ const activitySchema = mongoose.Schema(
     base64ImageString: {
       type: String,
       required: true,
+      immutable: true,
     },
+    participants: [
+      {
+        type: String,
+        unique: false,
+      },
+    ],
     owner: {
       type: mongoose.Schema.Types.ObjectId,
       required: true,

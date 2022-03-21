@@ -11,8 +11,6 @@ router.post("/activities", auth, async (req, res) => {
     owner: req.user._id, // links activity to a user
   })
 
-  console.log(activity)
-
   try {
     await activity.save()
     res.status(201).send({ token: "", status: "AApproved" })
