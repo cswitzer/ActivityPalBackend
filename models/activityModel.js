@@ -18,6 +18,22 @@ const activitySchema = mongoose.Schema(
       required: true,
       immutable: true,
     },
+    date: {
+      type: String,
+      required: true,
+    },
+    startTime: {
+      type: String,
+      required: true,
+    },
+    endTime: {
+      type: String,
+      required: true,
+    },
+    address: {
+      type: String,
+      required: true,
+    },
     participants: [
       {
         type: String,
