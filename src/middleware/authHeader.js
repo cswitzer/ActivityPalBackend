@@ -1,10 +1,9 @@
 const jwt = require("jsonwebtoken")
 const User = require("../../models/userModel.js")
 
-const auth = async (req, res, next) => {
-  console.log(req.body)
+const authHeader = async (req, res, next) => {
   try {
-    const token = req.body.token
+    const token = req.get("token")
     const decoded = jwt.verify(token, process.env.JWT_SECRET)
     const user = await User.findOne({ _id: decoded._id, token })
 
@@ -21,4 +20,4 @@ const auth = async (req, res, next) => {
   }
 }
 
-module.exports = auth
+module.exports = authHeader

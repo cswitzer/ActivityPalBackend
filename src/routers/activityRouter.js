@@ -1,6 +1,7 @@
 const express = require("express")
 const Activity = require("../../models/activityModel.js")
 const auth = require("../middleware/auth.js")
+const authHeader = require("../middleware/authHeader.js")
 
 const router = new express.Router()
 
@@ -26,17 +27,15 @@ router.post("/activities", auth, async (req, res) => {
 router.get("/activities", auth, async (req, res) => {})
 
 // get all activities which correspond to this user
-router.get("/activities/me", auth, async (req, res) => {
-  console.log("Here I am!")
+router.get("/activities/me", authHeader, async (req, res) => {
   try {
-    await req.user
-      .populate({
-        path: "activities",
-      })
-      .execPopulate()
-
+    await req.user.populate({
+      path: "activities",
+    })
+    console.log(req.user.activities.length)
     res.send({ activities: req.user.activities, status: "AApproved" })
   } catch (e) {
+    console.log(e)
     res.status(500).send({ status: "Rejected" })
   }
 })
