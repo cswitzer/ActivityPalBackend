@@ -4,6 +4,8 @@ const auth = require("../middleware/auth.js")
 
 const router = new express.Router()
 
+const formatDate = require("../../helpers/formatDate.js")
+
 // some functions will need to be async
 router.post("/activities", auth, async (req, res) => {
   const activity = new Activity({
@@ -25,6 +27,7 @@ router.get("/activities", auth, async (req, res) => {})
 
 // get all activities which correspond to this user
 router.get("/activities/me", auth, async (req, res) => {
+  console.log("Here I am!")
   try {
     await req.user
       .populate({
