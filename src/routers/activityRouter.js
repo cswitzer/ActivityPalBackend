@@ -32,7 +32,7 @@ router.get("/activities/me", authHeader, async (req, res) => {
     await req.user.populate({
       path: "activities",
     })
-    console.log(req.user.activities.length)
+    console.log(req.user.activities)
     res.send({ activities: req.user.activities, status: "AApproved" })
   } catch (e) {
     console.log(e)
