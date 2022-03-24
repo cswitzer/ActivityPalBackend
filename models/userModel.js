@@ -40,6 +40,9 @@ const userSchema = mongoose.Schema(
       },
       trim: true,
     },
+    joinedActivities: {
+      type: [mongoose.Schema.Types.ObjectId],
+    },
     token: {
       type: String,
     },
