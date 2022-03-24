@@ -24,7 +24,16 @@ router.post("/activities", auth, async (req, res) => {
 })
 
 // get all activities in the user's location (e.g. rexburg activities for rexburg residents)
-router.get("/activities", auth, async (req, res) => {})
+router.get("/activities", authHeader, async (req, res) => {
+  console.log(req.get("city"))
+  try {
+    const activities = await Activity.find({ city: req.get("city") })
+    res.send({ activities })
+  } catch (e) {
+    console.log(e)
+    res.status(500).send({ status: "Rejected" })
+  }
+})
 
 // get all activities which correspond to this user
 router.get("/activities/me", authHeader, async (req, res) => {
@@ -33,11 +42,16 @@ router.get("/activities/me", authHeader, async (req, res) => {
       path: "activities",
     })
     console.log(req.user.activities)
-    res.send({ activities: req.user.activities, status: "AApproved" })
+    res.send({ activities: req.user.activities })
   } catch (e) {
     console.log(e)
     res.status(500).send({ status: "Rejected" })
   }
+})
+
+router.get("/activities/:id", authHeader, async (req, res) => {
+  // :id refers to object id of activity
+  console.log(req.params._id)
 })
 
 module.exports = router
