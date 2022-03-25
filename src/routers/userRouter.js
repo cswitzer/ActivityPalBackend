@@ -1,12 +1,13 @@
 const express = require("express")
+const mongoose = require("mongoose")
+const router = new express.Router()
+
 const User = require("../../models/userModel.js")
 const auth = require("../middleware/auth.js")
 
-const router = new express.Router()
-
 // some functions will need to be async
 router.post("/users/register", async (req, res) => {
-  console.log(req.body)
+  req.body._id = new mongoose.Types.ObjectId().toHexString()
   const user = new User({
     ...req.body,
   })
