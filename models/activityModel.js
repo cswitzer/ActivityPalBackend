@@ -9,6 +9,9 @@ const User = require("./userModel.js")
 
 const activitySchema = mongoose.Schema(
   {
+    _id: {
+      type: mongoose.Schema.Types.ObjectId,
+    },
     name: {
       type: String,
       required: true,

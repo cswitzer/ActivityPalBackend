@@ -1,14 +1,14 @@
 const express = require("express")
+const mongoose = require("mongoose")
+const router = new express.Router()
+
 const Activity = require("../../models/activityModel.js")
 const auth = require("../middleware/auth.js")
 const authHeader = require("../middleware/authHeader.js")
 
-const router = new express.Router()
-
-const formatDate = require("../../helpers/formatDate.js")
-
 // some functions will need to be async
 router.post("/activities", auth, async (req, res) => {
+  req.body._id = new mongoose.Types.ObjectId().toHexString()
   const activity = new Activity({
     ...req.body,
     owner: req.user._id, // links activity to a user
@@ -16,7 +16,7 @@ router.post("/activities", auth, async (req, res) => {
 
   try {
     await activity.save()
-    res.status(201).send({ token: "", status: "AApproved" })
+    res.status(201).send({ token: req.token, status: "AApproved" })
   } catch (e) {
     console.log(e)
     res.status(401).send({ status: "Rejected" })
@@ -50,7 +50,7 @@ router.get("/activities/me", authHeader, async (req, res) => {
 })
 
 router.get("/activities/:id", authHeader, async (req, res) => {
-  // :id refers to object id of activity
+  // :id refers to object id of activity, which will be retrievd from a hidden editText field in cardview
   console.log(req.params._id)
 })
 
