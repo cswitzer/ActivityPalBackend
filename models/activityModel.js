@@ -44,7 +44,7 @@ const activitySchema = mongoose.Schema(
     participants: [
       {
         type: String,
-        unique: false,
+        unique: true,
       },
     ],
     owner: {

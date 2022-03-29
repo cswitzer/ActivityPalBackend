@@ -42,6 +42,7 @@ const userSchema = mongoose.Schema(
     },
     joinedActivities: {
       type: [mongoose.Schema.Types.ObjectId],
+      unique: true,
     },
     token: {
       type: String,
