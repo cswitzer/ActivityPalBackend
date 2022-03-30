@@ -73,4 +73,12 @@ router.get("/activities/me", authHeader, async (req, res) => {
   }
 })
 
+router.get("/activities/join", authHeader, async (req, res) => {
+  try {
+    console.log("Hi")
+  } catch (e) {
+    res.status(401).send({ status: "Rejected" })
+  }
+})
+
 module.exports = router
