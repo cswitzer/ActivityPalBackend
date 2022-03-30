@@ -75,7 +75,13 @@ router.get("/activities/me", authHeader, async (req, res) => {
 
 router.get("/activities/join", authHeader, async (req, res) => {
   try {
-    console.log("Hi")
+    const activities = await Promise.all(
+      req.user.joinedActivities.map(
+        async (activityId) => await Activity.findById(activityId)
+      )
+    )
+    console.log(activities)
+    res.send({ activities: activities })
   } catch (e) {
     res.status(401).send({ status: "Rejected" })
   }
