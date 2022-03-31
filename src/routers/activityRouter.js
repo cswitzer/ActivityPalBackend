@@ -24,9 +24,9 @@ router.post("/activities", auth, async (req, res) => {
   }
 })
 
+// join an activity with the associated id
 router.post("/activities/join/:id", auth, async (req, res) => {
   // :id refers to object id of activity, which will be retrievd from a hidden editText field in cardview
-  console.log(req.params.id)
   try {
     // update participants in activity and joinedActivities in user
     const user = await User.findOne({ token: req.token })
@@ -41,6 +41,42 @@ router.post("/activities/join/:id", auth, async (req, res) => {
     } else {
       throw "Error!"
     }
+
+    await user.save()
+    await activity.save()
+    res.send({ status: "Joined Success" })
+  } catch (e) {
+    console.log(e)
+    res.status(401).send({ status: "Rejected" })
+  }
+})
+
+router.post("/activities/leave/:id", auth, async (req, res) => {
+  try {
+    // update participants in activity and joinedActivities in user
+    const user = await User.findOneAndUpdate(
+      {
+        token: req.token,
+      },
+      {
+        $pull: {
+          joinedActivities: req.params.id,
+        },
+      }
+    )
+
+    const activity = await Activity.findOneAndUpdate(
+      {
+        _id: req.params.id,
+      },
+      {
+        $pull: {
+          participants: req.user.email,
+        },
+      }
+    )
+
+    console.log(user.joinedActivities, activity.participants)
 
     await user.save()
     await activity.save()
@@ -73,6 +109,7 @@ router.get("/activities/me", authHeader, async (req, res) => {
   }
 })
 
+// retrieve a list of all activities the user has joined
 router.get("/activities/join", authHeader, async (req, res) => {
   try {
     const activities = await Promise.all(
