@@ -7,7 +7,6 @@ const User = require("../../models/userModel.js")
 const auth = require("../middleware/auth.js")
 const authHeader = require("../middleware/authHeader.js")
 
-// some functions will need to be async
 router.post("/activities", auth, async (req, res) => {
   req.body._id = new mongoose.Types.ObjectId().toHexString()
   const activity = new Activity({
@@ -75,9 +74,6 @@ router.post("/activities/leave/:id", auth, async (req, res) => {
         },
       }
     )
-
-    console.log(user.joinedActivities, activity.participants)
-
     await user.save()
     await activity.save()
     res.send({ status: "Joined Success" })
@@ -90,8 +86,17 @@ router.post("/activities/leave/:id", auth, async (req, res) => {
 // get all activities in the user's location (e.g. rexburg activities for rexburg residents)
 router.get("/activities", authHeader, async (req, res) => {
   try {
-    const activities = await Activity.find({ city: req.get("city") })
-    res.send({ activities })
+    // TODO: filter out activities the user has joined
+    const activities = await Activity.find({
+      city: req.get("city"),
+    })
+    const filteredActivities = activities.filter((activity) => {
+      if (!req.user.joinedActivities.includes(activity._id)) {
+        console.log(activity)
+        return activity
+      }
+    })
+    res.send({ activities: filteredActivities })
   } catch (e) {
     res.status(500).send({ status: "Rejected" })
   }
