@@ -18,7 +18,6 @@ router.post("/activities", auth, async (req, res) => {
     await activity.save()
     res.status(201).send({ token: req.token, status: "AApproved" })
   } catch (e) {
-    console.log(e)
     res.status(401).send({ status: "Rejected" })
   }
 })
@@ -45,7 +44,6 @@ router.post("/activities/join/:id", auth, async (req, res) => {
     await activity.save()
     res.send({ status: "Joined Success" })
   } catch (e) {
-    console.log(e)
     res.status(401).send({ status: "Rejected" })
   }
 })
@@ -78,6 +76,21 @@ router.post("/activities/leave/:id", auth, async (req, res) => {
     await activity.save()
     res.send({ status: "Joined Success" })
   } catch (e) {
+    res.status(401).send({ status: "Rejected" })
+  }
+})
+
+router.patch("/activities/:id", auth, async (req, res) => {
+  console.log(req.params.id)
+  try {
+    await Activity.findByIdAndUpdate(
+      { _id: req.params.id },
+      {
+        ...req.body,
+      }
+    )
+    res.send({ status: "Updated Success " })
+  } catch (e) {
     console.log(e)
     res.status(401).send({ status: "Rejected" })
   }
@@ -86,17 +99,19 @@ router.post("/activities/leave/:id", auth, async (req, res) => {
 // get all activities in the user's location (e.g. rexburg activities for rexburg residents)
 router.get("/activities", authHeader, async (req, res) => {
   try {
-    // TODO: filter out activities the user has joined
     const activities = await Activity.find({
       city: req.get("city"),
     })
+    // only get activities the user hasn't joined
     const filteredActivities = activities.filter((activity) => {
       if (!req.user.joinedActivities.includes(activity._id)) {
-        console.log(activity)
         return activity
       }
     })
-    res.send({ activities: filteredActivities })
+
+    owners = []
+
+    res.send({ activities: filteredActivities, owners })
   } catch (e) {
     res.status(500).send({ status: "Rejected" })
   }
@@ -108,8 +123,18 @@ router.get("/activities/me", authHeader, async (req, res) => {
     await req.user.populate({
       path: "activities",
     })
-    res.send({ activities: req.user.activities })
+
+    // get current owner for each activity
+    const owners = await Promise.all(
+      req.user.activities.map(async (activity) => {
+        const user = await User.findById(activity.owner)
+        return user
+      })
+    )
+
+    res.send({ activities: req.user.activities, owners: owners })
   } catch (e) {
+    console.log(e)
     res.status(500).send({ status: "Rejected" })
   }
 })
@@ -122,8 +147,9 @@ router.get("/activities/join", authHeader, async (req, res) => {
         async (activityId) => await Activity.findById(activityId)
       )
     )
-    console.log(activities)
-    res.send({ activities: activities })
+    owners = []
+
+    res.send({ activities: activities, owners: owners })
   } catch (e) {
     res.status(401).send({ status: "Rejected" })
   }

@@ -19,7 +19,6 @@ const activitySchema = mongoose.Schema(
     base64ImageString: {
       type: String,
       required: true,
-      immutable: true,
     },
     date: {
       type: String,
